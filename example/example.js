@@ -6,7 +6,7 @@ function init(){
     // setDateRangePicker('id_daterange2', 'id_h_daterange2', moment().second(59).format(YMD_FORMAT));
 }
 
-function setDateRangePicker(id, hiddenID, defaultDate) {
+function setDateRangePicker(id, hiddenID, defaultDate, ajaxFunc) {
 	let hiddenElement = document.getElementById(hiddenID);
 
 	try {
@@ -25,9 +25,25 @@ function setDateRangePicker(id, hiddenID, defaultDate) {
 		"locale": {
 			"format": "YYYY/MM/DD",
 		},
+        "isCustomDate": isCustomDate,
+        "beforeRender": getDataExistDate,
 	}, function (start, end, label) {
 		hiddenElement.value = start.format(YMD_FORMAT);
 	});
+}
+
+function isCustomDate(dateObj){
+    let date = dateObj.format('D');
+    if (arr.includes(date)){
+        return 'dataexist';
+    } else {
+        return false;
+    }
+}
+
+function getDataExistDate(){
+    console.log("123");
+    return true;
 }
 
 function changeDate(id, hiddenID, date){

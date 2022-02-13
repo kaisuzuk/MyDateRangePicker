@@ -55,6 +55,7 @@
         this.autoUpdateInput = true;
         this.alwaysShowCalendars = false;
         this.ranges = {};
+        this.beforeRender = null;
 
         this.opens = 'right';
         if (this.element.hasClass('pull-right'))
@@ -284,6 +285,16 @@
             while (iterator > 0) {
                 this.locale.daysOfWeek.push(this.locale.daysOfWeek.shift());
                 iterator--;
+            }
+        }
+
+        if (typeof options.beforeRender === 'function'){
+            this.beforeRender = options.beforeRender;
+            this.beforeRenderFunc = function(){
+                return new Promise((resolve,reject) =>{
+                    this.beforeRender();
+                    resolve();
+                })
             }
         }
 
@@ -518,18 +529,13 @@
         },
 
         isCustomDate: function(a) {
-            let date = a.format('D');
-            if (arr.includes(date)){
-                return 'dataexist';
-            } else {
                 return false;
-            }
         },
 
         updateView: function() {
             if (this.timePicker) {
                 this.renderTimePicker('left');
-                this.renderTimePicker('right');
+                if (!this.singleDatePicker) this.renderTimePicker('right');
                 if (!this.endDate) {
                     this.container.find('.right .calendar-time select').prop('disabled', true).addClass('disabled');
                 } else {
@@ -610,15 +616,29 @@
                 this.leftCalendar.month.hour(hour).minute(minute).second(second);
                 this.rightCalendar.month.hour(hour).minute(minute).second(second);
             }
-
-            this.renderCalendar('left');
-            this.renderCalendar('right');
-
-            //highlight any predefined range matching the current start and end dates
-            this.container.find('.ranges li').removeClass('active');
-            if (this.endDate == null) return;
-
-            this.calculateChosenLabel();
+            let tmpDatepickerObj = this;
+            if (this.beforeRenderFunc){
+                this.beforeRenderFunc().then(function(){
+                    console.log("456");
+                    tmpDatepickerObj.renderCalendar('left');
+                    if (!tmpDatepickerObj.singleDatePicker) tmpDatepickerObj.renderCalendar('right');
+        
+                    //highlight any predefined range matching the current start and end dates
+                    tmpDatepickerObj.container.find('.ranges li').removeClass('active');
+                    if (tmpDatepickerObj.endDate == null) return;
+        
+                    tmpDatepickerObj.calculateChosenLabel();
+                })
+            } else {
+                this.renderCalendar('left');
+                if (!this.singleDatePicker) this.renderCalendar('right');
+    
+                //highlight any predefined range matching the current start and end dates
+                this.container.find('.ranges li').removeClass('active');
+                if (this.endDate == null) return;
+    
+                this.calculateChosenLabel();
+            }
         },
 
         renderCalendar: function(side) {
@@ -1509,7 +1529,7 @@
 
             //re-render the time pickers because changing one selection can affect what's enabled in another
             this.renderTimePicker('left');
-            this.renderTimePicker('right');
+            if (!this.singleDatePicker) this.renderTimePicker('right');
 
         },
 
