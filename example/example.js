@@ -1,8 +1,9 @@
 const YMD_FORMAT = 'YYYYMMDDHHmmss';
+let arr = ['1', '2', '3', '4', '5', '6'];
 
 function init(){
     setDateRangePicker('id_daterange1', 'id_h_daterange1', moment().subtract(1, 'days').second(00).format(YMD_FORMAT));
-    setDateRangePicker('id_daterange2', 'id_h_daterange2', moment().second(59).format(YMD_FORMAT));
+    // setDateRangePicker('id_daterange2', 'id_h_daterange2', moment().second(59).format(YMD_FORMAT));
 }
 
 function setDateRangePicker(id, hiddenID, defaultDate) {

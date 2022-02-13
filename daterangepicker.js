@@ -517,8 +517,13 @@
             return false;
         },
 
-        isCustomDate: function() {
-            return false;
+        isCustomDate: function(a) {
+            let date = a.format('D');
+            if (arr.includes(date)){
+                return 'dataexist';
+            } else {
+                return false;
+            }
         },
 
         updateView: function() {
@@ -704,7 +709,7 @@
                 html += '<th></th>';
             }
 
-            var dateHtml = this.locale.monthNames[calendar[1][1].month()] + calendar[1][1].format(" YYYY");
+            var dateHtml = calendar[1][1].format("YYYY年 ") + this.locale.monthNames[calendar[1][1].month()];
 
             if (this.showDropdowns) {
                 var currentMonth = calendar[1][1].month();
@@ -771,13 +776,14 @@
             }
 
             for (var row = 0; row < 6; row++) {
-                html += '<tr>';
+                var tr = '<tr>';
+                var offCnt = 0;
 
                 // add week number
                 if (this.showWeekNumbers)
-                    html += '<td class="week">' + calendar[row][0].week() + '</td>';
+                    tr += '<td class="week">' + calendar[row][0].week() + '</td>';
                 else if (this.showISOWeekNumbers)
-                    html += '<td class="week">' + calendar[row][0].isoWeek() + '</td>';
+                    tr += '<td class="week">' + calendar[row][0].isoWeek() + '</td>';
 
                 for (var col = 0; col < 7; col++) {
 
@@ -788,12 +794,16 @@
                         classes.push('today');
 
                     //highlight weekends
-                    if (calendar[row][col].isoWeekday() > 5)
-                        classes.push('weekend');
+                    if (calendar[row][col].isoWeekday() == 6)
+                        classes.push('sat');
+                    else if (calendar[row][col].isoWeekday() == 7)
+                        classes.push('sun');
 
                     //grey out the dates in other months displayed at beginning and end of this calendar
-                    if (calendar[row][col].month() != calendar[1][1].month())
+                    if (calendar[row][col].month() != calendar[1][1].month()){
                         classes.push('off', 'ends');
+                        offCnt++;
+                    }
 
                     //don't allow selection of dates before the minimum date
                     if (this.minDate && calendar[row][col].isBefore(this.minDate, 'day'))
@@ -837,10 +847,11 @@
                     if (!disabled)
                         cname += 'available';
 
-                    html += '<td class="' + cname.replace(/^\s+|\s+$/g, '') + '" data-title="' + 'r' + row + 'c' + col + '">' + calendar[row][col].date() + '</td>';
+                    tr += '<td class="' + cname.replace(/^\s+|\s+$/g, '') + '" data-title="' + 'r' + row + 'c' + col + '">' + calendar[row][col].date() + '</td>';
 
                 }
-                html += '</tr>';
+                tr += '</tr>';
+                if (offCnt < 7) html += tr;
             }
 
             html += '</tbody>';

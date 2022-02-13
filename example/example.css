@@ -1,0 +1,19 @@
+.dataexist{
+    background-color: aquamarine;
+}
+
+.sat{
+    background-color: aqua;
+}
+
+.sun{
+    background-color: red;
+}
+
+.ends{
+    visibility: hidden;
+}
+
+.today{
+    background-color: antiquewhite;
+}
